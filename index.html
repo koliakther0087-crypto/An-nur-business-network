@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সমিতি ও ইনভেস্টমেন্ট ম্যানেজমেন্ট সিস্টেম</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg border-b border-indigo-500">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                <span class="bg-indigo-600 text-xs px-2 py-1 rounded">ABN</span> সমবায় সমিতি ও ইনভেস্টমেন্ট ড্যাশবোর্ড
+            </h1>
+            <span class="text-xs bg-emerald-800 text-emerald-200 px-3 py-1 rounded-full font-semibold">লাইভ ডাটাবেজ সংযুক্ত</span>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+
+        <!-- ড্যাশবোর্ড কাউন্টার -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500 uppercase">মোট নিবন্ধিত সদস্য</p>
+                <h3 id="stat-members" class="text-2xl font-bold text-slate-800 mt-1">০</h3>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500 uppercase">সক্রিয় শেয়ার সংখ্যা (৳২০০০/-)</p>
+                <h3 id="stat-shares" class="text-2xl font-bold text-indigo-600 mt-1">০ টি</h3>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500 uppercase">মোট ইনভেস্টমেন্ট</p>
+                <h3 id="stat-investments" class="text-2xl font-bold text-amber-600 mt-1">৳ ০</h3>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500 uppercase">সমিতির সংরক্ষিত লভ্যাংশ</p>
+                <h3 id="stat-profits" class="text-2xl font-bold text-emerald-600 mt-1">৳ ০</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- সেকশন ১: সদস্য ও শেয়ার তৈরি -->
+            <div class="space-y-6 lg:col-span-1">
+                
+                <!-- মেম্বার ক্রিয়েশন ফরম -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-4">১. নতুন সদস্য নিবন্ধন</h2>
+                    <form id="member-reg-form" class="space-y-3 text-sm">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">পূর্ণ নাম</label>
+                            <input type="text" id="reg-name" required placeholder="সদস্যের নাম" class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">পিতার নাম</label>
+                            <input type="text" id="reg-father" required placeholder="পিতার নাম" class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">জন্ম নিবন্ধন / NID নম্বর</label>
+                            <input type="text" id="reg-nid" required placeholder="জন্ম নিবন্ধন বা ভোটার আইডি" class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">মোবাইল নম্বর</label>
+                            <input type="text" id="reg-phone" required placeholder="018xxxxxxxx" class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">ঠিকানা</label>
+                            <textarea id="reg-address" rows="2" placeholder="বর্তমান ও স্থায়ী ঠিকানা" class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">সমিতিতে পদবী</label>
+                            <select id="reg-designation" required class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none bg-white">
+                                <option value="উদ্যোক্তা & সভাপতি">উদ্যোক্তা & সভাপতি</option>
+                                <option value="সহ-সভাপতি">সহ-সভাপতি</option>
+                                <option value="সাধারণ সম্পাদক">সাধারণ সম্পাদক</option>
+                                <option value="যুগ্ম-সাধারণ সম্পাদক">যুগ্ম-সাধারণ সম্পাদক</option>
+                                <option value="সাংগঠনিক সম্পাদক">সাংগঠনিক সম্পাদক</option>
+                                <option value="অর্থ সম্পাদক">অর্থ সম্পাদক</option>
+                                <option value="দপ্তর সম্পাদক">দপ্তর সম্পাদক</option>
+                                <option value="প্রচার ও প্রকাশনা সম্পাদক">প্রচার ও প্রকাশনা সম্পাদক</option>
+                                <option value="সাধারণ সদস্য" selected>সাধারণ সদস্য</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2 rounded text-sm transition">
+                            অটো-আইডি জেনারেট ও সেভ করুন
+                        </button>
+                    </form>
+                </div>
+
+                <!-- শেয়ার যুক্ত করার ফরম -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-4">২. অ্যাকাউন্টে শেয়ার / আইডি যোগ</h2>
+                    <form id="share-assign-form" class="space-y-3 text-sm">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">সদস্য নির্বাচন করুন</label>
+                            <select id="share-member-select" required class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none bg-white">
+                                <option value="">সদস্য লোড হচ্ছে...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">শেয়ার সংখ্যা (প্রতি শেয়ার ২০০০/-)</label>
+                            <input type="number" id="share-count-input" min="1" value="1" required class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">এন্ট্রি ডেট</label>
+                            <input type="date" id="share-entry-date" required class="w-full border p-2 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded text-sm transition">
+                            শেয়ার আইডি জেনারেট ও যোগ করুন
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- সেকশন ২: ইনভেস্টমেন্ট ও লাভ-লোকসান এবং মেম্বার লিস্ট -->
+            <div class="space-y-6 lg:col-span-2">
+                
+                <!-- ইনভেস্টমেন্ট ও লাভ-লোকসান উইং -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-base font-bold text-slate-800">৩. ইনভেস্টমেন্ট উইং ও প্রফিট ক্যালকুলেশন</h2>
+                        <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">২০% অটো-শেয়ারিং রুলস</span>
+                    </div>
+
+                    <!-- ইনভেস্টর সার্চ -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">সদস্যের নিবন্ধন কোড দিন (যেমন: ABN2602001)</label>
+                            <input type="text" id="inv-search-code" placeholder="ABN26xxxxxx" class="w-full border p-2 rounded text-sm outline-none">
+                        </div>
+                        <div class="flex items-end">
+                            <button type="button" onclick="searchInvestor()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded text-sm transition">
+                                তথ্য খুঁজুন
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ইনভেস্টর প্রোফাইল কার্ড -->
+                    <div id="investor-card" class="hidden bg-indigo-50 border border-indigo-200 p-4 rounded-lg mb-4 text-sm space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 id="inv-name" class="font-bold text-indigo-900 text-base">---</h3>
+                                <p id="inv-desig" class="text-xs text-indigo-700 font-semibold">পদবী: ---</p>
+                            </div>
+                            <span id="inv-reg" class="text-xs font-mono bg-white px-2 py-1 rounded border border-indigo-200 font-bold">---</span>
+                        </div>
+                        
+                        <!-- ইনভেস্ট জমা ও ব্যাক ফর্ম -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-indigo-200">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">নতুন ইনভেস্টের পরিমাণ (টাকা)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="new-inv-amount" placeholder="৳ 50000" class="w-full border p-2 rounded text-sm">
+                                    <button type="button" onclick="submitInvestment()" class="bg-emerald-600 text-white px-3 py-2 rounded text-xs font-semibold hover:bg-emerald-700">ইনভেস্ট জমা</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">টাকা ব্যাক ও অর্জিত মোট লাভ (টাকা)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="profit-return-amount" placeholder="মোট লাভ ৳" class="w-full border p-2 rounded text-sm">
+                                    <button type="button" onclick="calculateProfitReturn()" class="bg-amber-600 text-white px-3 py-2 rounded text-xs font-semibold hover:bg-amber-700">লাভ বণ্টন</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="profit-calculation-result" class="text-xs font-semibold text-slate-700 mt-2"></div>
+                    </div>
+
+                    <!-- ইনভেস্টমেন্ট হিস্ট্রি টেবিল -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+                                <tr>
+                                    <th class="p-2">তারিখ</th>
+                                    <th class="p-2">ইনভেস্টর</th>
+                                    <th class="p-2">মূল ইনভেস্ট</th>
+                                    <th class="p-2">অর্জিত লাভ</th>
+                                    <th class="p-2">ইনভেস্টর পেল (২০%)</th>
+                                    <th class="p-2">সমিতি পেল (৮০%)</th>
+                                    <th class="p-2">স্ট্যাটাস</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invest-table-body" class="divide-y divide-slate-100 text-slate-700">
+                                <tr><td colspan="7" class="p-3 text-center text-slate-400">তথ্য লোড হচ্ছে...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- সদস্য ও তাদের শেয়ারের বিস্তারিত তালিকা -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-base font-bold text-slate-800">৪. নিবন্ধিত সদস্য ও শেয়ার তালিকা</h2>
+                        <button onclick="loadAllData()" class="text-xs font-semibold text-indigo-600 hover:underline">রিফ্রেশ</button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+                                <tr>
+                                    <th class="p-2">নিবন্ধন নম্বর</th>
+                                    <th class="p-2">নাম ও পিতা</th>
+                                    <th class="p-2">পদবী</th>
+                                    <th class="p-2">মোবাইল</th>
+                                    <th class="p-2">শেয়ার সংখ্যা ও আইডি</th>
+                                    <th class="p-2">মোট মূল্য</th>
+                                </tr>
+                            </thead>
+                            <tbody id="member-table-body" class="divide-y divide-slate-100 text-slate-700">
+                                <tr><td colspan="6" class="p-3 text-center text-slate-400">লোড হচ্ছে...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Supabase কনফিগারেশন
+        const SUPABASE_URL = 'https://yatadhruwksiygilnmgp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGFkaHJ1d2tzaXlnaWxubWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNDE2MjgsImV4cCI6MjEwODkxNzYyOH0.x6cxPm7BkiNmXVqnj_Ra79yIqq9wvdNIvq-RQSAYJqw';
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentActiveMember = null;
+
+        document.getElementById('share-entry-date').valueAsDate = new Date();
+
+        window.addEventListener('DOMContentLoaded', loadAllData);
+
+        // অটো রেজিস্ট্রেশন কোড জেনারেটর (ABN + YY + MM + 001)
+        async function generateNextRegistrationNo() {
+            const now = new Date();
+            const yy = String(now.getFullYear()).slice(-2);
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const prefix = `ABN${yy}${mm}`;
+
+            const { data } = await client
+                .from('members')
+                .select('registration_no')
+                .like('registration_no', `${prefix}%`)
+                .order('registration_no', { ascending: false })
+                .limit(1);
+
+            let nextSeq = 1;
+            if (data && data.length > 0) {
+                const lastCode = data[0].registration_no;
+                const lastSeqStr = lastCode.replace(prefix, '');
+                const parsed = parseInt(lastSeqStr, 10);
+                if (!isNaN(parsed)) nextSeq = parsed + 1;
+            }
+
+            return `${prefix}${String(nextSeq).padStart(3, '0')}`;
+        }
+
+        // অটো শেয়ার কোড জেনারেটর (ABN0001, ABN0002...)
+        async function getNextShareCodes(count) {
+            const { data } = await client
+                .from('member_shares')
+                .select('share_code')
+                .order('id', { ascending: false })
+                .limit(1);
+
+            let lastNum = 0;
+            if (data && data.length > 0) {
+                const numStr = data[0].share_code.replace('ABN', '');
+                lastNum = parseInt(numStr, 10) || 0;
+            }
+
+            const codes = [];
+            for (let i = 1; i <= count; i++) {
+                codes.push(`ABN${String(lastNum + i).padStart(4, '0')}`);
+            }
+            return codes;
+        }
+
+        // ডাটাবেজ থেকে ডাটা আনা ও টেবিল আপডেট
+        async function loadAllData() {
+            const { data: members, error: mErr } = await client
+                .from('members')
+                .select('*, member_shares(*)')
+                .order('id', { ascending: false });
+
+            const { data: investments, error: iErr } = await client
+                .from('investments')
+                .select('*, members(full_name, designation, registration_no)')
+                .order('id', { ascending: false });
+
+            const memberTable = document.getElementById('member-table-body');
+            const select = document.getElementById('share-member-select');
+            
+            memberTable.innerHTML = '';
+            select.innerHTML = '<option value="">সদস্য নির্বাচন করুন</option>';
+
+            let totalShares = 0;
+            if (members && members.length > 0) {
+                document.getElementById('stat-members').innerText = members.length;
+
+                members.forEach(m => {
+                    const shares = m.member_shares || [];
+                    totalShares += shares.length;
+                    const shareCodes = shares.map(s => `<span class="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded font-mono border text-[11px]">${s.share_code}</span>`).join(' ') || '<span class="text-slate-400">কোনো শেয়ার নেই</span>';
+                    const shareAmount = shares.length * 2000;
+
+                    memberTable.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-2 font-mono font-bold text-indigo-700">${m.registration_no}</td>
+                            <td class="p-2 font-medium">${m.full_name}<br><span class="text-slate-400 text-[10px]">পিতা: ${m.father_name}</span></td>
+                            <td class="p-2"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-semibold text-[11px]">${m.designation}</span></td>
+                            <td class="p-2 text-slate-600">${m.phone}</td>
+                            <td class="p-2 space-x-1">${shareCodes}</td>
+                            <td class="p-2 font-bold text-emerald-700">৳ ${shareAmount.toLocaleString()}</td>
+                        </tr>
+                    `;
+
+                    select.innerHTML += `<option value="${m.id}">${m.full_name} (${m.registration_no}) - ${m.designation}</option>`;
+                });
+            } else {
+                memberTable.innerHTML = '<tr><td colspan="6" class="p-3 text-center text-slate-400">কোনো সদস্য পাওয়া যায়নি।</td></tr>';
+            }
+
+            document.getElementById('stat-shares').innerText = `${totalShares} টি`;
+
+            const invTable = document.getElementById('invest-table-body');
+            invTable.innerHTML = '';
+            let totalInvest = 0;
+            let totalSomitiProfit = 0;
+
+            if (investments && investments.length > 0) {
+                investments.forEach(inv => {
+                    totalInvest += Number(inv.invest_amount || 0);
+                    totalSomitiProfit += Number(inv.somiti_profit_share || 0);
+
+                    invTable.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-2">${inv.invest_date}</td>
+                            <td class="p-2 font-medium">${inv.members?.full_name || 'N/A'}<br><span class="text-slate-400 font-mono text-[10px]">${inv.members?.registration_no}</span></td>
+                            <td class="p-2 font-semibold">৳ ${Number(inv.invest_amount).toLocaleString()}</td>
+                            <td class="p-2 font-bold text-slate-800">৳ ${Number(inv.profit_generated).toLocaleString()}</td>
+                            <td class="p-2 font-bold text-emerald-600">৳ ${Number(inv.investor_profit_share).toLocaleString()}</td>
+                            <td class="p-2 font-bold text-indigo-600">৳ ${Number(inv.somiti_profit_share).toLocaleString()}</td>
+                            <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] ${inv.status === 'running' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${inv.status}</span></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                invTable.innerHTML = '<tr><td colspan="7" class="p-3 text-center text-slate-400">কোনো ইনভেস্টমেন্ট রেকর্ড নেই।</td></tr>';
+            }
+
+            document.getElementById('stat-investments').innerText = '৳ ' + totalInvest.toLocaleString();
+            document.getElementById('stat-profits').innerText = '৳ ' + totalSomitiProfit.toLocaleString();
+        }
+
+        // সদস্য রেজিস্ট্রেশন সাবমিট
+        document.getElementById('member-reg-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const autoRegNo = await generateNextRegistrationNo();
+
+            const payload = {
+                registration_no: autoRegNo,
+                full_name: document.getElementById('reg-name').value,
+                father_name: document.getElementById('reg-father').value,
+                birth_reg_or_nid: document.getElementById('reg-nid').value,
+                phone: document.getElementById('reg-phone').value,
+                address: document.getElementById('reg-address').value,
+                designation: document.getElementById('reg-designation').value
+            };
+
+            const { error } = await client.from('members').insert([payload]);
+            if (error) {
+                alert('ত্রুটি: ' + error.message);
+            } else {
+                alert(`সদস্য সফলভাবে নিবন্ধিত হয়েছে!\nনিবন্ধন নম্বর: ${autoRegNo}`);
+                document.getElementById('member-reg-form').reset();
+                loadAllData();
+            }
+        });
+
+        // শেয়ার যুক্ত করা
+        document.getElementById('share-assign-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const memberId = document.getElementById('share-member-select').value;
+            const count = parseInt(document.getElementById('share-count-input').value, 10);
+            const entryDate = document.getElementById('share-entry-date').value;
+
+            const codes = await getNextShareCodes(count);
+            const rows = codes.map(c => ({
+                share_code: c,
+                member_id: memberId,
+                share_value: 2000,
+                entry_date: entryDate
+            }));
+
+            const { error } = await client.from('member_shares').insert(rows);
+            if (error) {
+                alert('ত্রুটি: ' + error.message);
+            } else {
+                alert(`সফলভাবে ${count}টি শেয়ার যুক্ত করা হয়েছে!\nকোড: ${codes.join(', ')}`);
+                loadAllData();
+            }
+        });
+
+        // ইনভেস্টর সার্চ
+        async function searchInvestor() {
+            const code = document.getElementById('inv-search-code').value.trim();
+            if (!code) return alert('নিবন্ধন নম্বর লিখুন');
+
+            const { data, error } = await client
+                .from('members')
+                .select('*')
+                .eq('registration_no', code)
+                .single();
+
+            if (error || !data) {
+                alert('সদস্য পাওয়া যায়নি!');
+                return;
+            }
+
+            currentActiveMember = data;
+            document.getElementById('inv-name').innerText = data.full_name;
+            document.getElementById('inv-desig').innerText = `পদবী: ${data.designation}`;
+            document.getElementById('inv-reg').innerText = data.registration_no;
+            document.getElementById('investor-card').classList.remove('hidden');
+            document.getElementById('profit-calculation-result').innerText = '';
+        }
+
+        // ইনভেস্ট জমা
+        async function submitInvestment() {
+            if (!currentActiveMember) return;
+            const amount = parseFloat(document.getElementById('new-inv-amount').value);
+            if (!amount || amount <= 0) return alert('সঠিক টাকার অঙ্ক দিন');
+
+            const { error } = await client.from('investments').insert([{
+                member_id: currentActiveMember.id,
+                invest_amount: amount,
+                status: 'running'
+            }]);
+
+            if (error) {
+                alert('ত্রুটি: ' + error.message);
+            } else {
+                alert(`৳ ${amount} ইনভেস্টমেন্ট সফলভাবে জমা হয়েছে!`);
+                document.getElementById('new-inv-amount').value = '';
+                loadAllData();
+            }
+        }
+
+        // লাভ বণ্টন
+        async function calculateProfitReturn() {
+            if (!currentActiveMember) return;
+            const profit = parseFloat(document.getElementById('profit-return-amount').value);
+            if (isNaN(profit) || profit < 0) return alert('অর্জিত লাভের অঙ্ক দিন');
+
+            const isOrganizer = currentActiveMember.designation.includes('উদ্যোক্তা') || currentActiveMember.designation.includes('সভাপতি');
+            
+            let investorShare = 0;
+            let somitiShare = 0;
+
+            if (isOrganizer) {
+                somitiShare = profit;
+                investorShare = 0;
+                document.getElementById('profit-calculation-result').innerHTML = `
+                    <span class="text-amber-700">⚠️ উদ্যোক্তা/সভাপতি হওয়ার কারণে এই ইনভেস্টের সম্পূর্ণ লাভ (৳${profit}) সমিতির ফান্ডে যোগ হয়েছে।</span>
+                `;
+            } else {
+                investorShare = profit * 0.20;
+                somitiShare = profit * 0.80;
+                document.getElementById('profit-calculation-result').innerHTML = `
+                    <span class="text-emerald-700">✅ হিসাব সম্পন্ন: ইনভেস্টর ২০% = <b>৳ ${investorShare}</b> | সমিতি ৮০% = <b>৳ ${somitiShare}</b></span>
+                `;
+            }
+
+            const { data: latestInv } = await client
+                .from('investments')
+                .select('*')
+                .eq('member_id', currentActiveMember.id)
+                .eq('status', 'running')
+                .order('id', { ascending: false })
+                .limit(1);
+
+            if (latestInv && latestInv.length > 0) {
+                await client.from('investments').update({
+                    profit_generated: profit,
+                    investor_profit_share: investorShare,
+                    somiti_profit_share: somitiShare,
+                    status: 'closed',
+                    closed_date: new Date()
+                }).eq('id', latestInv[0].id);
+
+                alert('লাভ বণ্টন ডাটাবেজে সংরক্ষিত হয়েছে!');
+                loadAllData();
+            }
+        }
+    </script>
+</body>
+</html>
