@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An-Nur Business Network - কেন্দ্রীয় অ্যাডমিন প্যানেল</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+    <!-- হেডার -->
+    <header class="bg-slate-900 text-white p-4 shadow-md border-b-2 border-indigo-600 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <span class="bg-indigo-600 text-xs font-bold px-2.5 py-1 rounded">ADMIN</span>
+                <h1 class="text-base sm:text-lg font-bold tracking-wide">An-Nur Business Network - ম্যানেজমেন্ট কন্ট্রোল</h1>
+            </div>
+            <div class="flex items-center space-x-3 text-xs">
+                <a href="index.html" target="_blank" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300">
+                    <i class="fa-solid fa-mobile-screen-button mr-1"></i> মেম্বার অ্যাপ প্রিভিউ
+                </a>
+                <button onclick="loadDashboardData()" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg font-medium text-white transition">
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i> রিফ্রেশ
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
+
+        <!-- ড্যাশবোর্ড সামারি কার্ড -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-medium text-slate-500 uppercase">পেন্ডিং রিসিট</p>
+                <h3 id="stat-pending" class="text-2xl font-black text-amber-600 mt-1">০ টি</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-medium text-slate-500 uppercase">মোট সদস্য</p>
+                <h3 id="stat-members" class="text-2xl font-black text-slate-800 mt-1">০ জন</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-medium text-slate-500 uppercase">সক্রিয় শেয়ার সংখ্যা</p>
+                <h3 id="stat-shares" class="text-2xl font-black text-indigo-600 mt-1">০ টি</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-medium text-slate-500 uppercase">অনুমোদিত মোট জমা</p>
+                <h3 id="stat-approved-funds" class="text-2xl font-black text-emerald-600 mt-1">৳ ০</h3>
+            </div>
+        </div>
+
+        <!-- সেকশন ১: রিসিট ভেরিফিকেশন ও অ্যাপ্রুভাল ফিড (সর্বোচ্চ অগ্রাধিকার) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></span>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-800">সদস্যদের পেন্ডিং রিসিট ও জমার ভাউচার রিকোয়েস্ট</h2>
+                </div>
+                <span id="pending-badge-text" class="text-xs bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">০ টি পর্যালোচনা বাকি</span>
+            </div>
+
+            <div class="p-4 sm:p-5 overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+                        <tr>
+                            <th class="p-3">তারিখ</th>
+                            <th class="p-3">সদস্যের তথ্য</th>
+                            <th class="p-3">মাধ্যম ও ট্রানজেকশন</th>
+                            <th class="p-3">টাকার অঙ্ক</th>
+                            <th class="p-3">রিসিট / নোট</th>
+                            <th class="p-3 text-center">সিদ্ধান্ত</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-receipts-body" class="divide-y divide-slate-100">
+                        <tr><td colspan="6" class="p-4 text-center text-slate-400">কোনো পেন্ডিং রিসিট নেই।</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- সেকশন ২: সদস্য তৈরি এবং শেয়ার ম্যানেজমেন্ট গ্রিড -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- ফর্ম কলাম -->
+            <div class="space-y-6">
+                <!-- ১. নতুন মেম্বার তৈরি -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-xs space-y-3">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">নতুন সদস্য নিবন্ধন (অটো-আইডি)</h3>
+                    <form id="admin-member-form" class="space-y-3">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">পূর্ণ নাম</label>
+                            <input type="text" id="m-name" required placeholder="সদস্যের পুরো নাম" class="w-full border p-2 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">পিতার নাম</label>
+                            <input type="text" id="m-father" required placeholder="পিতার নাম" class="w-full border p-2 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">জন্ম নিবন্ধন / NID</label>
+                            <input type="text" id="m-nid" required placeholder="NID বা জন্ম সনদ নম্বর" class="w-full border p-2 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">মোবাইল নম্বর</label>
+                            <input type="text" id="m-phone" required placeholder="018xxxxxxxx" class="w-full border p-2 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">ঠিকানা</label>
+                            <input type="text" id="m-address" placeholder="ঠিকানা" class="w-full border p-2 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">পদবী</label>
+                            <select id="m-desig" required class="w-full border p-2 rounded-lg outline-none bg-white">
+                                <option value="উদ্যোক্তা & সভাপতি">উদ্যোক্তা & সভাপতি</option>
+                                <option value="সহ-সভাপতি">সহ-সভাপতি</option>
+                                <option value="সাধারণ সম্পাদক">সাধারণ সম্পাদক</option>
+                                <option value="যুগ্ম-সাধারণ সম্পাদক">যুগ্ম-সাধারণ সম্পাদক</option>
+                                <option value="সাংগঠনিক সম্পাদক">সাংগঠনিক সম্পাদক</option>
+                                <option value="অর্থ সম্পাদক">অর্থ সম্পাদক</option>
+                                <option value="দপ্তর সম্পাদক">দপ্তর সম্পাদক</option>
+                                <option value="প্রচার ও প্রকাশনা সম্পাদক">প্রচার ও প্রকাশনা সম্পাদক</option>
+                                <option value="সাধারণ সদস্য" selected>সাধারণ সদস্য</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg transition">
+                            সদস্য তৈরি করুন (ডিফল্ট পিন: 1234)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ২. শেয়ার যোগ করার ফর্ম -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-xs space-y-3">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">শেয়ার কোড অ্যাসাইন (প্রতি শেয়ার ২০০০/-)</h3>
+                    <form id="admin-share-form" class="space-y-3">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">সদস্য নির্বাচন করুন</label>
+                            <select id="share-member-select" required class="w-full border p-2 rounded-lg outline-none bg-white">
+                                <option value="">সদস্য লোড হচ্ছে...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">শেয়ার সংখ্যা</label>
+                            <input type="number" id="share-count" min="1" value="1" required class="w-full border p-2 rounded-lg outline-none">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg transition">
+                            শেয়ার কোড জেনারেট ও যোগ করুন
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- সদস্য তালিকা ও বিবরণ কলাম -->
+            <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="text-sm font-bold text-slate-800">নিবন্ধিত সকল সদস্য ও তাদের শেয়ার আইডি</h3>
+                    <span id="member-count-badge" class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">০ জন</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+                            <tr>
+                                <th class="p-2.5">নিবন্ধন কোড</th>
+                                <th class="p-2.5">সদস্যের নাম</th>
+                                <th class="p-2.5">পদবী</th>
+                                <th class="p-2.5">মোবাইল</th>
+                                <th class="p-2.5">অ্যাসাইনকৃত শেয়ার আইডি</th>
+                                <th class="p-2.5 text-center">লগইন পিন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-members-body" class="divide-y divide-slate-100">
+                            <tr><td colspan="6" class="p-4 text-center text-slate-400">তথ্য লোড হচ্ছে...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- লজিক ও Supabase স্ক্রিপ্ট -->
+    <script>
+        const SUPABASE_URL = 'https://yatadhruwksiygilnmgp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGFkaHJ1d2tzaXlnaWxubWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNDE2MjgsImV4cCI6MjEwODkxNzYyOH0.x6cxPm7BkiNmXVqnj_Ra79yIqq9wvdNIvq-RQSAYJqw';
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        window.addEventListener('DOMContentLoaded', loadDashboardData);
+
+        // ১. অটো মেম্বার আইডি তৈরি (ABN + YY + MM + 001)
+        async function generateMemberCode() {
+            const now = new Date();
+            const yy = String(now.getFullYear()).slice(-2);
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const prefix = `ABN${yy}${mm}`;
+
+            const { data } = await client
+                .from('members')
+                .select('registration_no')
+                .like('registration_no', `${prefix}%`)
+                .order('registration_no', { ascending: false })
+                .limit(1);
+
+            let nextSeq = 1;
+            if (data && data.length > 0) {
+                const lastCode = data[0].registration_no;
+                const lastSeqStr = lastCode.replace(prefix, '');
+                const parsed = parseInt(lastSeqStr, 10);
+                if (!isNaN(parsed)) nextSeq = parsed + 1;
+            }
+
+            return `${prefix}${String(nextSeq).padStart(3, '0')}`;
+        }
+
+        // ২. অটো শেয়ার কোড তৈরি (ABN0001, ABN0002...)
+        async function generateShareCodes(count) {
+            const { data } = await client
+                .from('member_shares')
+                .select('share_code')
+                .order('id', { ascending: false })
+                .limit(1);
+
+            let lastNum = 0;
+            if (data && data.length > 0) {
+                const numStr = data[0].share_code.replace('ABN', '');
+                lastNum = parseInt(numStr, 10) || 0;
+            }
+
+            const codes = [];
+            for (let i = 1; i <= count; i++) {
+                codes.push(`ABN${String(lastNum + i).padStart(4, '0')}`);
+            }
+            return codes;
+        }
+
+        // ৩. সমস্ত ড্যাশবোর্ড ডাটা লোড করা
+        async function loadDashboardData() {
+            // পেন্ডিং রিসিট লোড
+            const { data: receipts } = await client
+                .from('payment_requests')
+                .select('*, members(full_name, registration_no, phone)')
+                .order('id', { ascending: false });
+
+            // সদস্য ও শেয়ার লোড
+            const { data: members } = await client
+                .from('members')
+                .select('*, member_shares(*)')
+                .order('id', { ascending: false });
+
+            // ক. পেন্ডিং রিসিট রেন্ডার
+            const pendingBody = document.getElementById('pending-receipts-body');
+            pendingBody.innerHTML = '';
+            let pendingCount = 0;
+            let approvedSum = 0;
+
+            if (receipts && receipts.length > 0) {
+                receipts.forEach(r => {
+                    if (r.status === 'approved') approvedSum += Number(r.amount);
+                    if (r.status === 'pending') {
+                        pendingCount++;
+                        const imgButton = r.receipt_image_url 
+                            ? `<a href="${r.receipt_image_url}" target="_blank" class="text-indigo-600 underline font-semibold"><i class="fa-solid fa-image"></i> স্লিপ দেখুন</a>`
+                            : `<span class="text-slate-400">ছবি নেই</span>`;
+
+                        pendingBody.innerHTML += `
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-slate-500 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
+                                <td class="p-3">
+                                    <span class="font-bold text-slate-800">${r.members?.full_name || 'সদস্য পাওয়া যায়নি'}</span><br>
+                                    <span class="text-[10px] text-indigo-700 font-mono font-bold">${r.members?.registration_no || ''}</span>
+                                </td>
+                                <td class="p-3">
+                                    <span class="font-semibold text-slate-700">${r.payment_method}</span><br>
+                                    <span class="font-mono text-[11px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${r.trx_id_or_slip}</span>
+                                </td>
+                                <td class="p-3 font-bold text-emerald-700 text-sm">৳ ${Number(r.amount).toLocaleString()}</td>
+                                <td class="p-3">
+                                    ${imgButton}<br>
+                                    <span class="text-[10px] text-slate-500 italic">${r.notes || 'কোনো নোট নেই'}</span>
+                                </td>
+                                <td class="p-3 text-center space-x-1 whitespace-nowrap">
+                                    <button onclick="updateReceiptStatus(${r.id}, 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+                                        <i class="fa-solid fa-check"></i> Approve
+                                    </button>
+                                    <button onclick="updateReceiptStatus(${r.id}, 'rejected')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+                                        <i class="fa-solid fa-xmark"></i> Reject
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
+
+            if (pendingCount === 0) {
+                pendingBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400 font-medium">কোনো পেন্ডিং রিসিট নেই। সব রিসিট প্রসেস করা হয়েছে!</td></tr>';
+            }
+
+            document.getElementById('stat-pending').innerText = `${pendingCount} টি`;
+            document.getElementById('pending-badge-text').innerText = `${pendingCount} টি পর্যালোচনা বাকি`;
+            document.getElementById('stat-approved-funds').innerText = `৳ ${approvedSum.toLocaleString()}`;
+
+            // খ. সদস্য ও শেয়ার রেন্ডার
+            const membersBody = document.getElementById('all-members-body');
+            const selectDropdown = document.getElementById('share-member-select');
+            membersBody.innerHTML = '';
+            selectDropdown.innerHTML = '<option value="">সদস্য নির্বাচন করুন</option>';
+
+            let totalSharesCount = 0;
+            if (members && members.length > 0) {
+                document.getElementById('stat-members').innerText = `${members.length} জন`;
+                document.getElementById('member-count-badge').innerText = `${members.length} জন`;
+
+                members.forEach(m => {
+                    const shares = m.member_shares || [];
+                    totalSharesCount += shares.length;
+
+                    const shareTags = shares.map(s => `
+                        <span class="bg-slate-100 text-indigo-900 border border-slate-200 px-1.5 py-0.5 rounded font-mono text-[10px] font-bold">
+                            ${s.share_code}
+                        </span>
+                    `).join(' ') || '<span class="text-slate-400 text-[11px]">কোনো শেয়ার নেই</span>';
+
+                    membersBody.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-2.5 font-mono font-bold text-indigo-700">${m.registration_no}</td>
+                            <td class="p-2.5 font-bold text-slate-800">${m.full_name}</td>
+                            <td class="p-2.5"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-semibold text-[10px]">${m.designation}</span></td>
+                            <td class="p-2.5 text-slate-600">${m.phone}</td>
+                            <td class="p-2.5 space-x-1">${shareTags}</td>
+                            <td class="p-2.5 text-center font-mono font-bold text-slate-700">${m.login_pin || '1234'}</td>
+                        </tr>
+                    `;
+
+                    selectDropdown.innerHTML += `<option value="${m.id}">${m.full_name} (${m.registration_no})</option>`;
+                });
+            } else {
+                membersBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">কোনো সদস্য পাওয়া যায়নি।</td></tr>';
+            }
+
+            document.getElementById('stat-shares').innerText = `${totalSharesCount} টি`;
+        }
+
+        // ৪. রিসিট Approve বা Reject করা
+        async function updateReceiptStatus(receiptId, status) {
+            const confirmMsg = status === 'approved' 
+                ? 'আপনি কি নিশ্চিত এই জমার রিসিটটি অনুমোদন (Approve) করতে চান?' 
+                : 'আপনি কি নিশ্চিত এই রিসিটটি বাতিল (Reject) করতে চান?';
+
+            if (!confirm(confirmMsg)) return;
+
+            const { error } = await client
+                .from('payment_requests')
+                .update({ 
+                    status: status, 
+                    updated_at: new Date() 
+                })
+                .eq('id', receiptId);
+
+            if (error) {
+                alert('ত্রুটি: ' + error.message);
+            } else {
+                alert(`রিসিট সফলভাবে ${status === 'approved' ? 'অনুমোদিত' : 'বাতিল'} হয়েছে!`);
+                loadDashboardData();
+            }
+        }
+
+        // ৫. নতুন সদস্য সাবমিট করা
+        document.getElementById('admin-member-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const autoCode = await generateMemberCode();
+
+            const payload = {
+                registration_no: autoCode,
+                full_name: document.getElementById('m-name').value.trim(),
+                father_name: document.getElementById('m-father').value.trim(),
+                birth_reg_or_nid: document.getElementById('m-nid').value.trim(),
+                phone: document.getElementById('m-phone').value.trim(),
+                address: document.getElementById('m-address').value.trim(),
+                designation: document.getElementById('m-desig').value,
+                login_pin: '1234'
+            };
+
+            const { error } = await client.from('members').insert([payload]);
+            if (error) {
+                alert('ত্রুটি: ' + error.message);
+            } else {
+                alert(`সদস্য সফলভাবে তৈরি হয়েছে!\nনিবন্ধন কোড: ${autoCode}\nডিফল্ট লগইন পিন: 1234`);
+                document.getElementById('admin-member-form').reset();
+                loadDashboardData();
+            }
+        });
+
+        // ৬. শেয়ার অ্যাসাইন করা
+        document.getElementById('admin-share-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const memberId = document.getElementById('share-member-select').value;
+            const count = parseInt(document.getElementById('share-count').value, 10);
+
+            if (!memberId) return alert('অনুগ্রহ করে একজন সদস্য নির্বাচন করুন');
+
+            const codes = await generateShareCodes(count);
+            const rows = codes.map(c => ({
+                share_code: c,
+                member_id: memberId,
+                share_value: 2000,
+                entry_date: new Date().toISOString().split('T')[0]
+            }));
+
+            const { error } = await client.from('member_shares').insert(rows);
+            if (error) {
+                alert('ত্রুটি: ' + error.message);
+            } else {
+                alert(`সফলভাবে ${count}টি শেয়ার যোগ করা হয়েছে!\nশেয়ার কোড: ${codes.join(', ')}`);
+                document.getElementById('admin-share-form').reset();
+                loadDashboardData();
+            }
+        });
+    </script>
+</body>
+</html>
