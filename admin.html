@@ -10,7 +10,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen">
 
-    <!-- হেডার (বড় নাম ও লোগো আপলোড উইং) -->
+    <!-- হেডার -->
     <header class="bg-slate-900 text-white p-4 shadow-xl border-b-4 border-indigo-600 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
@@ -25,9 +25,8 @@
                 </div>
             </div>
 
-            <!-- লোগো আপলোড ও কুইক অ্যাকশন -->
+            <!-- লোগো আপলোড ও নেভিগেশন -->
             <div class="flex flex-wrap items-center gap-2 text-xs">
-                <!-- কম্পিউটার ফাইল থেকে লোগো আপলোড বাটন -->
                 <label class="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-2 rounded-xl font-semibold cursor-pointer transition flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
                     <span>লোগো পরিবর্তন করুন</span>
@@ -46,14 +45,14 @@
 
     <div class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
 
-        <!-- ড্যাশবোর্ড সামারি কার্ডস -->
+        <!-- সামারি কার্ড -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                 <p class="text-xs font-semibold text-slate-500 uppercase">পেন্ডিং রিসিট</p>
                 <h3 id="stat-pending" class="text-2xl font-black text-amber-600 mt-1">০ টি</h3>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                <p class="text-xs font-semibold text-slate-500 uppercase">মোট সদস্য সংখ্যা</p>
+                <p class="text-xs font-semibold text-slate-500 uppercase">মোট সদস্য</p>
                 <h3 id="stat-members" class="text-2xl font-black text-slate-800 mt-1">০ জন</h3>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -66,7 +65,7 @@
             </div>
         </div>
 
-        <!-- সেকশন ১: পেন্ডিং কিস্তি রিসিট অনুমোদন / বাতিল টেবিল -->
+        <!-- সেকশন ১: পেন্ডিং রিসিট টেবিল -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex justify-between items-center">
                 <div class="flex items-center space-x-2">
@@ -84,7 +83,7 @@
                             <th class="p-3">সদস্যের বিবরণ</th>
                             <th class="p-3">পরিশোধিত মাস</th>
                             <th class="p-3">মাধ্যম ও TrxID</th>
-                            <th class="p-3">টাকার অঙ্ক ও লেট ফি</th>
+                            <th class="p-3">টাকার অঙ্ক</th>
                             <th class="p-3">ডকুমেন্ট স্লিপ</th>
                             <th class="p-3 text-center">সিদ্ধান্ত</th>
                         </tr>
@@ -96,16 +95,13 @@
             </div>
         </div>
 
-        <!-- সেকশন ২: সরাসরি অফিসে ক্যাশ জমা গ্রহণ (হ্যান্ড ক্যাশ এন্ট্রি) -->
+        <!-- সেকশন ২: সরাসরি অফিসে ক্যাশ জমা -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <div class="border-b pb-3 mb-4 flex justify-between items-center">
-                <div>
-                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-hand-holding-dollar text-emerald-600"></i>
-                        সরাসরি অফিসে ক্যাশ কিস্তি গ্রহণ (হ্যান্ড ক্যাশ)
-                    </h3>
-                    <p class="text-[11px] text-slate-500">সদস্য সরাসরি অফিসে এসে নগদ টাকা দিলে এখান থেকে তাৎক্ষণিক এন্ট্রি দিন।</p>
-                </div>
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-hand-holding-dollar text-emerald-600"></i>
+                    সরাসরি অফিসে ক্যাশ কিস্তি গ্রহণ (হ্যান্ড ক্যাশ)
+                </h3>
                 <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">সরাসরি অনুমোদিত হবে</span>
             </div>
 
@@ -132,13 +128,17 @@
             </form>
         </div>
 
-        <!-- সেকশন ৩: মেম্বার ও শেয়ার ম্যানেজমেন্ট গ্রিড -->
+        <!-- সেকশন ৩: এক ফর্মেই সদস্য + শেয়ার ক্রিয়েশন এবং মেম্বার লিস্ট -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
+            <!-- সদস্য + শেয়ার তৈরির একক ফর্ম -->
             <div class="space-y-6">
-                <!-- ১. নতুন মেম্বার তৈরি ফর্ম -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-xs space-y-3">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">নতুন সদস্য নিবন্ধন (অটো-আইডি ABN26...)</h3>
+                    <div class="border-b pb-2">
+                        <h3 class="text-sm font-bold text-slate-800">নতুন সদস্য ও শেয়ার নিবন্ধন</h3>
+                        <p class="text-[11px] text-slate-500">আইডি ও শেয়ার কোড একসাথে তৈরি হবে</p>
+                    </div>
+
                     <form id="admin-member-form" class="space-y-3">
                         <div>
                             <label class="block font-semibold text-slate-600 mb-1">পূর্ণ নাম</label>
@@ -162,7 +162,7 @@
                         </div>
                         <div>
                             <label class="block font-semibold text-slate-600 mb-1">পদবী</label>
-                            <select id="m-desig" required class="w-full border p-2 rounded-lg outline-none bg-white">
+                            <select id="m-desig" required class="w-full border p-2 rounded-lg outline-none bg-white font-semibold">
                                 <option value="উদ্যোক্তা & সভাপতি">উদ্যোক্তা & সভাপতি</option>
                                 <option value="সহ-সভাপতি">সহ-সভাপতি</option>
                                 <option value="সাধারণ সম্পাদক">সাধারণ সম্পাদক</option>
@@ -174,34 +174,22 @@
                                 <option value="সাধারণ সদস্য" selected>সাধারণ সদস্য</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg transition">
-                            সদস্য সংরক্ষণ করুন (ডিফল্ট পিন: 1234)
-                        </button>
-                    </form>
-                </div>
 
-                <!-- ২. শেয়ার অ্যাসাইন ফর্ম -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-xs space-y-3">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">শেয়ার কোড তৈরি ও যোগ (প্রতি শেয়ার ২০০০/-)</h3>
-                    <form id="admin-share-form" class="space-y-3">
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-1">সদস্য নির্বাচন করুন</label>
-                            <select id="share-member-select" required class="w-full border p-2 rounded-lg outline-none bg-white">
-                                <option value="">সদস্য লোড হচ্ছে...</option>
-                            </select>
+                        <!-- শেয়ার সংখ্যা নির্ধারণ (ফর্মের ভেতরেই সরাসরি যুক্ত) -->
+                        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-200">
+                            <label class="block font-bold text-indigo-900 mb-1">প্রাথমিক শেয়ার সংখ্যা (প্রতিটি ২০০০/-)</label>
+                            <input type="number" id="m-share-count" min="1" value="1" required class="w-full border border-indigo-300 p-2 rounded-lg outline-none font-bold text-indigo-700 bg-white">
+                            <p class="text-[10px] text-indigo-600 mt-1">* ১টি দিলে ১টি আইডি হবে, ৩টি দিলে ৩টি শেয়ার আইডি তৈরি হবে।</p>
                         </div>
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-1">শেয়ার সংখ্যা</label>
-                            <input type="number" id="share-count" min="1" value="1" required class="w-full border p-2 rounded-lg outline-none">
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg transition">
-                            শেয়ার আইডি জেনারেট করুন
+
+                        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-lg transition shadow-md">
+                            সদস্য ও শেয়ার সেভ করুন
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- সদস্য তালিকা ও বিবরণ -->
+            <!-- সদস্য তালিকা ও তাদের শেয়ারসমূহ -->
             <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div class="flex justify-between items-center border-b pb-3">
                     <h3 class="text-sm font-bold text-slate-800">নিবন্ধিত সকল সদস্য ও তাদের শেয়ার আইডি</h3>
@@ -216,7 +204,7 @@
                                 <th class="p-2.5">সদস্যের নাম</th>
                                 <th class="p-2.5">পদবী</th>
                                 <th class="p-2.5">মোবাইল</th>
-                                <th class="p-2.5">অ্যাসাইনকৃত শেয়ার আইডি</th>
+                                <th class="p-2.5">শেয়ার আইডি সমূহ</th>
                                 <th class="p-2.5 text-center">লগইন পিন</th>
                             </tr>
                         </thead>
@@ -231,7 +219,7 @@
 
     </div>
 
-    <!-- স্ক্রিপ্ট লজিক -->
+    <!-- স্ক্রিপ্ট -->
     <script>
         const SUPABASE_URL = 'https://yatadhruwksiygilnmgp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGFkaHJ1d2tzaXlnaWxubWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNDE2MjgsImV4cCI6MjEwODkxNzYyOH0.x6cxPm7BkiNmXVqnj_Ra79yIqq9wvdNIvq-RQSAYJqw';
@@ -242,67 +230,35 @@
             loadDashboardData();
         });
 
-        // ১. লাইভ লোগো ফেচ করা
         async function fetchSystemLogo() {
-            const { data } = await client
-                .from('system_settings')
-                .select('logo_data')
-                .eq('id', 'main_logo')
-                .single();
-
+            const { data } = await client.from('system_settings').select('logo_data').eq('id', 'main_logo').single();
             if (data && data.logo_data) {
-                const imgHtml = `<img src="${data.logo_data}" class="w-12 h-12 rounded-full object-contain bg-white p-0.5 border border-indigo-400 shadow">`;
-                document.getElementById('admin-logo-preview').innerHTML = imgHtml;
+                document.getElementById('admin-logo-preview').innerHTML = `<img src="${data.logo_data}" class="w-12 h-12 rounded-full object-contain bg-white p-0.5 border border-indigo-400 shadow">`;
             }
         }
 
-        // ২. কম্পিউটার থেকে লোগো আপলোড ও ডাটাবেজে সেভ
         async function uploadLogoFromComputer(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            // ফাইলের সাইজ চেক (সর্বোচ্চ 2MB)
-            if (file.size > 2 * 1024 * 1024) {
-                alert('লোগো ফাইলের সাইজ ২ মেগাবাইটের (2MB) কম হতে হবে!');
-                return;
-            }
+            if (file.size > 2 * 1024 * 1024) return alert('লোগো ফাইলের সাইজ ২ মেগাবাইটের কম হতে হবে!');
 
             const reader = new FileReader();
             reader.onload = async (e) => {
-                const base64Data = e.target.result;
-
-                const { error } = await client
-                    .from('system_settings')
-                    .upsert({
-                        id: 'main_logo',
-                        logo_data: base64Data,
-                        updated_at: new Date()
-                    });
-
-                if (error) {
-                    alert('লোগো সেভ করতে সমস্যা হয়েছে: ' + error.message);
-                } else {
-                    alert('লোগো সফলভাবে আপলোড ও সেভ হয়েছে! মেম্বার অ্যাপ এবং অ্যাডমিন উভয় প্যানেলে এটি যুক্ত হয়ে গেছে।');
-                    fetchSystemLogo();
-                }
+                const { error } = await client.from('system_settings').upsert({ id: 'main_logo', logo_data: e.target.result, updated_at: new Date() });
+                if (error) alert('ত্রুটি: ' + error.message);
+                else { alert('লোগো সফলভাবে সেভ হয়েছে!'); fetchSystemLogo(); }
             };
             reader.readAsDataURL(file);
         }
 
-        // ৩. অটো মেম্বার কোড (ABN2602001)
+        // অটো মেম্বার কোড (ABN2602001)
         async function generateMemberCode() {
             const now = new Date();
             const yy = String(now.getFullYear()).slice(-2);
             const mm = String(now.getMonth() + 1).padStart(2, '0');
             const prefix = `ABN${yy}${mm}`;
 
-            const { data } = await client
-                .from('members')
-                .select('registration_no')
-                .like('registration_no', `${prefix}%`)
-                .order('registration_no', { ascending: false })
-                .limit(1);
-
+            const { data } = await client.from('members').select('registration_no').like('registration_no', `${prefix}%`).order('registration_no', { ascending: false }).limit(1);
             let nextSeq = 1;
             if (data && data.length > 0) {
                 const lastCode = data[0].registration_no;
@@ -310,24 +266,17 @@
                 const parsed = parseInt(lastSeqStr, 10);
                 if (!isNaN(parsed)) nextSeq = parsed + 1;
             }
-
             return `${prefix}${String(nextSeq).padStart(3, '0')}`;
         }
 
-        // ৪. অটো শেয়ার কোড (ABN0001...)
+        // অটো শেয়ার কোড (ABN0001...)
         async function generateShareCodes(count) {
-            const { data } = await client
-                .from('member_shares')
-                .select('share_code')
-                .order('id', { ascending: false })
-                .limit(1);
-
+            const { data } = await client.from('member_shares').select('share_code').order('id', { ascending: false }).limit(1);
             let lastNum = 0;
             if (data && data.length > 0) {
                 const numStr = data[0].share_code.replace('ABN', '');
                 lastNum = parseInt(numStr, 10) || 0;
             }
-
             const codes = [];
             for (let i = 1; i <= count; i++) {
                 codes.push(`ABN${String(lastNum + i).padStart(4, '0')}`);
@@ -335,19 +284,12 @@
             return codes;
         }
 
-        // ৫. সমস্ত ডাটা লোড
+        // সমস্ত ডাটা লোড
         async function loadDashboardData() {
-            const { data: receipts } = await client
-                .from('payment_requests')
-                .select('*, members(full_name, registration_no, phone)')
-                .order('id', { ascending: false });
+            const { data: receipts } = await client.from('payment_requests').select('*, members(full_name, registration_no, phone)').order('id', { ascending: false });
+            const { data: members } = await client.from('members').select('*, member_shares(*)').order('id', { ascending: false });
 
-            const { data: members } = await client
-                .from('members')
-                .select('*, member_shares(*)')
-                .order('id', { ascending: false });
-
-            // পেন্ডিং রিসিট রেন্ডার
+            // পেন্ডিং রিসিট
             const pendingBody = document.getElementById('pending-receipts-body');
             pendingBody.innerHTML = '';
             let pendingCount = 0;
@@ -358,44 +300,18 @@
                     if (r.status === 'approved') approvedSum += Number(r.amount);
                     if (r.status === 'pending') {
                         pendingCount++;
-                        const imgButton = r.receipt_image_url 
-                            ? `<a href="${r.receipt_image_url}" target="_blank" class="text-indigo-600 underline font-semibold"><i class="fa-solid fa-image"></i> স্লিপ দেখুন</a>`
-                            : `<span class="text-slate-400">ছবি নেই</span>`;
-
-                        const lateFeeBadge = Number(r.late_fee) > 0 
-                            ? `<span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">লেট ফি: ৳${r.late_fee}</span>`
-                            : '';
-
+                        const imgButton = r.receipt_image_url ? `<a href="${r.receipt_image_url}" target="_blank" class="text-indigo-600 underline font-semibold">স্লিপ দেখুন</a>` : `<span class="text-slate-400">ছবি নেই</span>`;
                         pendingBody.innerHTML += `
                             <tr class="hover:bg-slate-50">
                                 <td class="p-3 text-slate-500 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
-                                <td class="p-3">
-                                    <span class="font-bold text-slate-800">${r.members?.full_name || 'সদস্য পাওয়া যায়নি'}</span><br>
-                                    <span class="text-[10px] text-indigo-700 font-mono font-bold">${r.members?.registration_no || ''}</span>
-                                </td>
-                                <td class="p-3">
-                                    <span class="font-semibold text-slate-700">${r.target_months || 'কিস্তি'}</span><br>
-                                    <span class="text-[10px] text-slate-400">${r.installment_count || 1} টি কিস্তি</span>
-                                </td>
-                                <td class="p-3">
-                                    <span class="font-semibold text-slate-700">${r.payment_method}</span><br>
-                                    <span class="font-mono text-[11px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${r.trx_id_or_slip}</span>
-                                </td>
-                                <td class="p-3">
-                                    <span class="font-bold text-emerald-700 text-sm">৳ ${Number(r.amount).toLocaleString()}</span><br>
-                                    ${lateFeeBadge}
-                                </td>
-                                <td class="p-3">
-                                    ${imgButton}<br>
-                                    <span class="text-[10px] text-slate-500 italic">${r.notes || ''}</span>
-                                </td>
+                                <td class="p-3"><span class="font-bold text-slate-800">${r.members?.full_name || ''}</span><br><span class="text-[10px] text-indigo-700 font-mono font-bold">${r.members?.registration_no || ''}</span></td>
+                                <td class="p-3"><span class="font-semibold text-slate-700">${r.target_months || 'কিস্তি'}</span></td>
+                                <td class="p-3"><span class="font-semibold">${r.payment_method}</span><br><span class="font-mono text-[11px] text-slate-500 bg-slate-100 px-1 py-0.5 rounded">${r.trx_id_or_slip}</span></td>
+                                <td class="p-3 font-bold text-emerald-700">৳ ${Number(r.amount).toLocaleString()}</td>
+                                <td class="p-3">${imgButton}</td>
                                 <td class="p-3 text-center space-x-1 whitespace-nowrap">
-                                    <button onclick="updateReceiptStatus(${r.id}, 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
-                                        <i class="fa-solid fa-check"></i> Approve
-                                    </button>
-                                    <button onclick="updateReceiptStatus(${r.id}, 'rejected')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
-                                        <i class="fa-solid fa-xmark"></i> Reject
-                                    </button>
+                                    <button onclick="updateReceiptStatus(${r.id}, 'approved')" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold">Approve</button>
+                                    <button onclick="updateReceiptStatus(${r.id}, 'rejected')" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold">Reject</button>
                                 </td>
                             </tr>
                         `;
@@ -403,21 +319,15 @@
                 });
             }
 
-            if (pendingCount === 0) {
-                pendingBody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400 font-medium">কোনো পেন্ডিং রিসিট নেই। সব রিসিট অনুমোদিত!</td></tr>';
-            }
-
+            if (pendingCount === 0) pendingBody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400">কোনো পেন্ডিং রিসিট নেই।</td></tr>';
             document.getElementById('stat-pending').innerText = `${pendingCount} টি`;
             document.getElementById('pending-badge-text').innerText = `${pendingCount} টি পর্যালোচনা বাকি`;
             document.getElementById('stat-approved-funds').innerText = `৳ ${approvedSum.toLocaleString()}`;
 
-            // মেম্বার লিস্ট ও ড্রপডাউন
+            // মেম্বার লিস্ট ও ক্যাশ সিলেক্ট
             const membersBody = document.getElementById('all-members-body');
-            const shareSelect = document.getElementById('share-member-select');
             const cashSelect = document.getElementById('cash-member-select');
-
             membersBody.innerHTML = '';
-            shareSelect.innerHTML = '<option value="">সদস্য নির্বাচন করুন</option>';
             cashSelect.innerHTML = '<option value="">সদস্য নির্বাচন করুন</option>';
 
             let totalSharesCount = 0;
@@ -430,9 +340,7 @@
                     totalSharesCount += shares.length;
 
                     const shareTags = shares.map(s => `
-                        <span class="bg-slate-100 text-indigo-900 border border-slate-200 px-1.5 py-0.5 rounded font-mono text-[10px] font-bold">
-                            ${s.share_code}
-                        </span>
+                        <span class="bg-slate-100 text-indigo-900 border border-slate-200 px-1.5 py-0.5 rounded font-mono text-[10px] font-bold">${s.share_code}</span>
                     `).join(' ') || '<span class="text-slate-400 text-[11px]">কোনো শেয়ার নেই</span>';
 
                     membersBody.innerHTML += `
@@ -445,78 +353,54 @@
                             <td class="p-2.5 text-center font-mono font-bold text-slate-700">${m.login_pin || '1234'}</td>
                         </tr>
                     `;
-
-                    shareSelect.innerHTML += `<option value="${m.id}">${m.full_name} (${m.registration_no})</option>`;
                     cashSelect.innerHTML += `<option value="${m.id}">${m.full_name} (${m.registration_no})</option>`;
                 });
             } else {
                 membersBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">কোনো সদস্য পাওয়া যায়নি।</td></tr>';
             }
-
             document.getElementById('stat-shares').innerText = `${totalSharesCount} টি`;
         }
 
-        // ৬. রিসিট Approve বা Reject করা
         async function updateReceiptStatus(receiptId, status) {
-            const confirmMsg = status === 'approved' 
-                ? 'আপনি কি নিশ্চিত এই জমার রিসিটটি অনুমোদন (Approve) করতে চান?' 
-                : 'আপনি কি নিশ্চিত এই রিসিটটি বাতিল (Reject) করতে চান?';
-
-            if (!confirm(confirmMsg)) return;
-
-            const { error } = await client
-                .from('payment_requests')
-                .update({ 
-                    status: status, 
-                    updated_at: new Date() 
-                })
-                .eq('id', receiptId);
-
-            if (error) {
-                alert('ত্রুটি: ' + error.message);
-            } else {
-                alert(`রিসিট সফলভাবে ${status === 'approved' ? 'অনুমোদিত' : 'বাতিল'} হয়েছে!`);
-                loadDashboardData();
-            }
+            if (!confirm(`আপনি কি নিশ্চিত এই রিসিটটি ${status === 'approved' ? 'অনুমোদন' : 'বাতিল'} করতে চান?`)) return;
+            const { error } = await client.from('payment_requests').update({ status: status, updated_at: new Date() }).eq('id', receiptId);
+            if (error) alert('ত্রুটি: ' + error.message);
+            else { alert('রিসিট আপডেট সম্পন্ন!'); loadDashboardData(); }
         }
 
-        // ৭. অফিসে সরাসরি ক্যাশ কিস্তি গ্রহণ ফর্ম সাবমিট
+        // অফিসে নগদ কিস্তি জমা
         document.getElementById('office-cash-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const memberId = document.getElementById('cash-member-select').value;
             const months = document.getElementById('cash-months').value.trim();
             const amount = parseFloat(document.getElementById('cash-amount').value);
 
-            if (!memberId || !amount) return alert('সদস্য এবং টাকার পরিমাণ দিন');
-
-            const payload = {
+            const { error } = await client.from('payment_requests').insert([{
                 member_id: memberId,
                 amount: amount,
                 payment_method: 'অফিস ক্যাশ (হ্যান্ড ক্যাশ)',
-                trx_id_or_slip: 'OFFICE-CASH-' + Date.now().toString().slice(-6),
+                trx_id_or_slip: 'CASH-' + Date.now().toString().slice(-6),
                 target_months: months,
-                notes: 'সরাসরি অফিসে ক্যাশ জমা দেওয়া হয়েছে',
                 status: 'approved',
                 is_office_cash: true
-            };
+            }]);
 
-            const { error } = await client.from('payment_requests').insert([payload]);
-
-            if (error) {
-                alert('ত্রুটি: ' + error.message);
-            } else {
-                alert(`৳ ${amount} টাকার ক্যাশ কিস্তি সফলভাবে গ্রহণ ও অনুমোদন করা হয়েছে!`);
+            if (error) alert('ত্রুটি: ' + error.message);
+            else {
+                alert(`৳ ${amount} টাকার কিস্তি সফলভাবে গ্রহণ করা হয়েছে!`);
                 document.getElementById('office-cash-form').reset();
                 loadDashboardData();
             }
         });
 
-        // ৮. নতুন সদস্য তৈরি
+        // সদস্য ও শেয়ার একসাথে সাবমিট হ্যান্ডলার
         document.getElementById('admin-member-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const autoCode = await generateMemberCode();
+            const shareCount = parseInt(document.getElementById('m-share-count').value, 10);
 
-            const payload = {
+            // ১. সদস্য তৈরি
+            const memberPayload = {
                 registration_no: autoCode,
                 full_name: document.getElementById('m-name').value.trim(),
                 father_name: document.getElementById('m-father').value.trim(),
@@ -527,38 +411,29 @@
                 login_pin: '1234'
             };
 
-            const { error } = await client.from('members').insert([payload]);
-            if (error) {
-                alert('ত্রুটি: ' + error.message);
-            } else {
-                alert(`সদস্য সফলভাবে তৈরি হয়েছে!\nনিবন্ধন কোড: ${autoCode}\nডিফল্ট লগইন পিন: 1234`);
-                document.getElementById('admin-member-form').reset();
-                loadDashboardData();
+            const { data: memberData, error: mError } = await client.from('members').insert([memberPayload]).select().single();
+
+            if (mError) {
+                alert('সদস্য তৈরিতে ত্রুটি: ' + mError.message);
+                return;
             }
-        });
 
-        // ৯. শেয়ার তৈরি ও যোগ
-        document.getElementById('admin-share-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const memberId = document.getElementById('share-member-select').value;
-            const count = parseInt(document.getElementById('share-count').value, 10);
-
-            if (!memberId) return alert('সদস্য নির্বাচন করুন');
-
-            const codes = await generateShareCodes(count);
-            const rows = codes.map(c => ({
+            // ২. শেয়ার কোড তৈরি ও যোগ
+            const codes = await generateShareCodes(shareCount);
+            const shareRows = codes.map(c => ({
                 share_code: c,
-                member_id: memberId,
+                member_id: memberData.id,
                 share_value: 2000,
                 entry_date: new Date().toISOString().split('T')[0]
             }));
 
-            const { error } = await client.from('member_shares').insert(rows);
-            if (error) {
-                alert('ত্রুটি: ' + error.message);
+            const { error: sError } = await client.from('member_shares').insert(shareRows);
+
+            if (sError) {
+                alert('সদস্য তৈরি হয়েছে কিন্তু শেয়ার যুক্ত হতে সমস্যা হয়েছে: ' + sError.message);
             } else {
-                alert(`সফলভাবে ${count}টি শেয়ার যুক্ত করা হয়েছে!\nকোড: ${codes.join(', ')}`);
-                document.getElementById('admin-share-form').reset();
+                alert(`সদস্য ও শেয়ার সফলভাবে তৈরি হয়েছে!\n\nসদস্য নিবন্ধন কোড: ${autoCode}\nশেয়ার সংখ্যা: ${shareCount} টি (${codes.join(', ')})\nলগইন পিন: 1234`);
+                document.getElementById('admin-member-form').reset();
                 loadDashboardData();
             }
         });
