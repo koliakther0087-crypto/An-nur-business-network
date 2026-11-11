@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>An-Nur Business Network - সদস্য পোর্টাল</title>
+    <title>আন্-নূর বিজনেস নেটওয়ার্ক - সদস্য পোর্টাল</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -13,23 +13,29 @@
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- Supabase Config -->
+    <!-- Supabase কনফিগারেশন -->
     <script>
         const SUPABASE_URL = 'https://yatadhruwksiygilnmgp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdGFkaHJ1d2tzaXlnaWxubWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNDE2MjgsImV4cCI6MjEwODkxNzYyOH0.x6cxPm7BkiNmXVqnj_Ra79yIqq9wvdNIvq-RQSAYJqw';
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentMember = null;
+        let paidMonthsSet = new Set();
+        let currentActiveShares = 1;
     </script>
 
-    <!-- ১. লগইন স্ক্রিন (ডিফল্ট ভিউ) -->
+    <!-- ১. মেম্বার লগইন স্ক্রিন -->
     <div id="login-screen" class="max-w-md w-full mx-auto p-6 flex flex-col justify-center min-h-screen">
         <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 text-center space-y-6">
-            <div class="w-20 h-20 bg-indigo-900 text-white rounded-full flex items-center justify-center mx-auto shadow-lg text-2xl font-bold">
-                ABN
+            
+            <div id="login-logo-container" class="flex justify-center">
+                <div class="w-20 h-20 bg-indigo-900 text-white rounded-full flex items-center justify-center shadow-lg text-2xl font-bold">
+                    ABN
+                </div>
             </div>
+
             <div>
-                <h2 class="text-xl font-bold text-slate-900">An-Nur Business Network</h2>
-                <p class="text-xs text-slate-500 mt-1">সদস্য অ্যাকাউন্ট লগইন</p>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">আন্-নূর বিজনেস নেটওয়ার্ক</h1>
+                <p class="text-xs text-indigo-700 font-bold mt-1">সদস্য সেন্ট্রাল একাউন্ট পোর্টাল</p>
             </div>
 
             <form id="member-login-form" class="space-y-4 text-left">
@@ -38,52 +44,53 @@
                     <input type="text" id="login-reg-no" required placeholder="যেমন: ABN2602001" class="w-full border border-slate-300 p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-600 outline-none uppercase font-semibold">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">অ্যাক্সেস পিন (PIN)</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">লগইন পিন (PIN)</label>
                     <input type="password" id="login-pin" required placeholder="ডিফল্ট পিন: 1234" class="w-full border border-slate-300 p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-600 outline-none">
                 </div>
-                <button type="submit" class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-3 rounded-xl text-sm transition shadow-md shadow-indigo-200">
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
                     লগইন করুন
                 </button>
             </form>
-            <p class="text-[11px] text-slate-400">লগইন পিন না জানা থাকলে অ্যাডমিন বা সমিতির অফিসে যোগাযোগ করুন।</p>
+            <p class="text-[11px] text-slate-400">নিবন্ধন নম্বর বা পিন ভুলে গেলে সমিতির অফিসে যোগাযোগ করুন।</p>
         </div>
     </div>
 
-    <!-- ২. মেম্বার অ্যাপ মূল ড্যাশবোর্ড স্ক্রিন (লগইনের পর দৃশ্যমান) -->
+    <!-- ২. মেম্বার মূল পোর্টাল -->
     <div id="app-dashboard" class="hidden flex-1 max-w-md w-full mx-auto pb-20">
         
-        <!-- টপ হেডার -->
-        <header class="bg-indigo-900 text-white p-5 rounded-b-3xl shadow-lg space-y-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-indigo-800 border border-indigo-700 rounded-full flex items-center justify-center font-bold text-sm text-indigo-200">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div>
-                        <h3 id="dash-name" class="font-bold text-sm text-white">---</h3>
-                        <p id="dash-reg" class="text-[10px] text-indigo-300 font-mono tracking-wider font-semibold">---</p>
-                    </div>
+        <!-- টপ হেডার (বড় শিরোনাম ও লাইভ লোগো) -->
+        <header class="bg-slate-900 text-white p-5 rounded-b-3xl shadow-xl space-y-4 border-b-4 border-indigo-600">
+            <div class="flex items-center space-x-3">
+                <div id="header-logo-container">
+                    <div class="w-12 h-12 bg-indigo-700 text-white rounded-full flex items-center justify-center font-bold text-sm">ABN</div>
                 </div>
-                <button onclick="logout()" class="text-xs bg-indigo-800/80 px-3 py-1.5 rounded-full border border-indigo-700 hover:bg-indigo-700 text-indigo-200">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i> লগআউট
+                <div class="flex-1">
+                    <h1 class="text-lg font-black tracking-wide text-white leading-tight">আন্-নূর বিজনেস নেটওয়ার্ক</h1>
+                    <p class="text-[10px] text-indigo-300 font-semibold uppercase tracking-wider">সঞ্চয়, বিনিয়োগ ও সমবায় সমিতি</p>
+                </div>
+                <button onclick="logout()" class="text-xs bg-slate-800 p-2 rounded-xl border border-slate-700 text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-power-off"></i>
                 </button>
             </div>
 
-            <!-- ব্যালেন্স ও শেয়ার ওভারভিউ কার্ড -->
-            <div class="bg-gradient-to-r from-indigo-800 to-indigo-950 p-4 rounded-2xl border border-indigo-700/60 shadow-inner">
-                <p class="text-[11px] text-indigo-300">মোট সক্রিয় মূলধন (শেয়ার + জমা)</p>
-                <div class="flex justify-between items-baseline mt-1">
-                    <h2 id="dash-total-funds" class="text-2xl font-black tracking-tight text-white">৳ ০</h2>
-                    <span id="dash-share-badge" class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full font-semibold border border-emerald-500/30">০ টি শেয়ার</span>
+            <!-- মেম্বার কার্ড -->
+            <div class="bg-gradient-to-r from-indigo-900 to-indigo-950 p-4 rounded-2xl border border-indigo-700/60 shadow-inner">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 id="dash-name" class="font-bold text-base text-white">---</h2>
+                        <span id="dash-reg" class="text-xs text-indigo-300 font-mono font-bold tracking-wider">---</span>
+                    </div>
+                    <span id="dash-desig" class="text-[10px] bg-indigo-800/80 text-indigo-200 border border-indigo-600 px-2 py-0.5 rounded-md font-semibold">---</span>
                 </div>
+
                 <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-indigo-800/80 text-xs">
                     <div>
-                        <span class="text-[10px] text-indigo-400">অর্জিত লভ্যাংশ</span>
-                        <p id="dash-profit" class="font-bold text-emerald-400">৳ ০</p>
+                        <span class="text-[10px] text-indigo-300">আমার সক্রিয় শেয়ার</span>
+                        <p id="dash-share-count" class="font-black text-emerald-400 text-sm mt-0.5">০ টি</p>
                     </div>
                     <div>
-                        <span class="text-[10px] text-indigo-400">সমিতিতে পদবী</span>
-                        <p id="dash-desig" class="font-semibold text-slate-200 truncate">সদস্য</p>
+                        <span class="text-[10px] text-indigo-300">মোট বিনিয়োগকৃত সঞ্চয়</span>
+                        <p id="dash-total-savings" class="font-black text-white text-sm mt-0.5">৳ ০</p>
                     </div>
                 </div>
             </div>
@@ -92,49 +99,51 @@
         <!-- মূল কন্টেন্ট উইন্ডো -->
         <main class="p-4 space-y-4">
 
-            <!-- অ্যাকশন বাটন -->
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="openModal('receipt-modal')" class="bg-indigo-700 hover:bg-indigo-800 text-white p-3.5 rounded-2xl flex items-center justify-center space-x-2 shadow-md shadow-indigo-100 transition active:scale-95">
-                    <i class="fa-solid fa-receipt text-indigo-300"></i>
-                    <span class="text-xs font-bold">রিসিট জমা দিন</span>
-                </button>
-                <button onclick="openModal('profile-modal')" class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 p-3.5 rounded-2xl flex items-center justify-center space-x-2 shadow-sm transition active:scale-95">
-                    <i class="fa-solid fa-id-card text-indigo-600"></i>
-                    <span class="text-xs font-bold">আমার প্রোফাইল</span>
-                </button>
-            </div>
+            <!-- মাসিক কিস্তি পরিশোধ বাটন (প্রধান ফোকাস) -->
+            <button onclick="openInstallmentModal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-emerald-900/10 transition active:scale-95">
+                <div class="flex items-center space-x-3 text-left">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black">আপনার মাসিক কিস্তি পরিশোধ করুন</h3>
+                        <p class="text-[10px] text-emerald-100">মাস নির্বাচন, লেট ফি ও রিসিট সাবমিশন</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-emerald-200"></i>
+            </button>
 
-            <!-- আমার শেয়ার তালিকা -->
+            <!-- শেয়ার তালিকা কার্ড -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex justify-between items-center">
                     <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide">আমার অন্তর্ভুক্ত শেয়ারসমূহ</h4>
-                    <span id="dash-share-count-text" class="text-[11px] text-indigo-600 font-semibold">০ টি</span>
+                    <span id="dash-share-sum" class="text-[11px] text-indigo-600 font-semibold font-mono">৳ ০</span>
                 </div>
                 <div id="dash-share-list" class="flex flex-wrap gap-2">
                     <span class="text-xs text-slate-400">কোনো শেয়ার লোড হয়নি</span>
                 </div>
             </div>
 
-            <!-- ইনভেস্টমেন্ট হিসাব ও লভ্যাংশ খাত -->
+            <!-- লভ্যাংশ ও ইনভেস্টমেন্ট স্থিতি -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide">ইনভেস্টমেন্ট ও লভ্যাংশের তথ্য</h4>
+                <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide">ইনভেস্টমেন্ট ও লভ্যাংশ সারসংক্ষেপ</h4>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <span class="text-[11px] text-slate-500">মোট বিনিয়োগকৃত</span>
-                        <h5 id="dash-inv-amount" class="text-base font-bold text-slate-800 mt-1">৳ ০</h5>
+                        <span class="text-[10px] text-slate-500 font-semibold">বিনিয়োগ স্থিতি</span>
+                        <h5 id="dash-inv-amount" class="text-sm font-bold text-slate-800 mt-1">৳ ০</h5>
                     </div>
-                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-                        <span class="text-[11px] text-emerald-700">বণ্টনকৃত লাভ (২০%)</span>
-                        <h5 id="dash-inv-profit" class="text-base font-bold text-emerald-700 mt-1">৳ ০</h5>
+                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                        <span class="text-[10px] text-indigo-700 font-semibold">মোট অর্জিত লাভ</span>
+                        <h5 id="dash-inv-profit" class="text-sm font-bold text-indigo-700 mt-1">৳ ০</h5>
                     </div>
                 </div>
             </div>
 
-            <!-- জমাকৃত রিসিটের স্ট্যাটাস হিস্ট্রি -->
+            <!-- জমাকৃত রিসিট ও ভাউচার হিস্ট্রি -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex justify-between items-center">
-                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide">সাম্প্রতিক জমা ও ভাউচার হিস্ট্রি</h4>
-                    <button onclick="loadMemberDashboard()" class="text-[11px] text-indigo-600 font-semibold"><i class="fa-solid fa-rotate-right"></i></button>
+                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide">সাম্প্রতিক কিস্তি জমা ও রিসিট হিস্ট্রি</h4>
+                    <button onclick="loadMemberDashboard()" class="text-xs text-indigo-600 font-semibold"><i class="fa-solid fa-rotate-right"></i></button>
                 </div>
                 <div id="dash-receipt-list" class="space-y-2">
                     <p class="text-xs text-slate-400 text-center py-4">কোনো রিসিট জমা দেওয়া হয়নি</p>
@@ -144,92 +153,140 @@
         </main>
     </div>
 
-    <!-- ৩. রিসিট জমা দেওয়ার মডাল পপ-আপ -->
-    <div id="receipt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <!-- ৩. কিস্তি পরিশোধ ও রিসিট সাবমিশন মডাল (কাস্টম লজিক) -->
+    <div id="installment-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-sm font-bold text-slate-800">ব্যাংক / ক্যাশ রিসিট জমা দিন</h3>
-                <button onclick="closeModal('receipt-modal')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                <div>
+                    <h3 class="text-sm font-black text-slate-800">আপনার মাসিক কিস্তি পরিশোধ করুন</h3>
+                    <p class="text-[10px] text-slate-500">নিয়মমাফিক কিস্তি ও রিসিট জমা দিন</p>
+                </div>
+                <button onclick="closeModal('installment-modal')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
             </div>
 
-            <form id="receipt-submit-form" class="space-y-3 text-xs">
+            <form id="installment-submit-form" class="space-y-3 text-xs">
+                
+                <!-- ১. বছর ও আজকের তারিখ -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">বছর নির্বাচন করুন</label>
+                        <select id="ins-year" onchange="renderMonthSelectors()" class="w-full border p-2.5 rounded-xl bg-white outline-none font-bold">
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">আজকের তারিখ (স্বয়ংক্রিয়)</label>
+                        <input type="text" id="ins-current-date" readonly class="w-full border p-2.5 rounded-xl bg-slate-100 font-mono font-bold text-slate-600 outline-none">
+                    </div>
+                </div>
+
+                <!-- ২. মাসের অপশন গ্রিড (পরিশোধিত মাস আনভিজিবল/লক থাকবে) -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block font-semibold text-slate-600">যেসব মাসের কিস্তি দিতে চান (সিলেক্ট করুন):</label>
+                        <span id="selected-months-count" class="text-[10px] font-bold text-indigo-600">০ মাস নির্বাচিত</span>
+                    </div>
+                    <div id="month-grid" class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <!-- জাভাস্ক্রিপ্ট দিয়ে মাস জেনারেট হবে -->
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1 italic">* ধূসর রঙের মাসগুলো ইতিপূর্বে পরিশোধ করা হয়ে গেছে।</p>
+                </div>
+
+                <!-- ৩. কিস্তির টাকা ও লেট ফি গণনা বক্স -->
+                <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-200 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600 font-medium">প্রতি কিস্তির মূল হার (শেয়ার প্রতি):</span>
+                        <span id="ins-rate-text" class="font-bold text-slate-800">৳ ২০০০</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600 font-medium">মূল কিস্তির মোট টাকা:</span>
+                        <span id="ins-base-amount" class="font-bold text-slate-800">৳ ০</span>
+                    </div>
+                    <div class="flex justify-between items-center text-amber-700">
+                        <span class="font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-triangle-exclamation text-[10px]"></i> বিলম্ব ফি (মাসিক লেট ফি):
+                        </span>
+                        <span id="ins-late-fee" class="font-black">৳ ০</span>
+                    </div>
+                    <div class="border-t border-indigo-200 pt-2 flex justify-between items-center text-sm">
+                        <span class="font-bold text-indigo-950">সর্বমোট প্রদেয় টাকা:</span>
+                        <span id="ins-total-payable" class="font-black text-emerald-700 text-base">৳ ০</span>
+                    </div>
+                </div>
+
+                <!-- ৪. ট্রানজেকশন তথ্য ও স্লিপ -->
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">পেমেন্টের মাধ্যম</label>
-                    <select id="rec-method" required class="w-full border p-2.5 rounded-xl bg-white outline-none">
+                    <select id="ins-method" required class="w-full border p-2.5 rounded-xl bg-white outline-none">
                         <option value="বিকাশ">বিকাশ (bKash)</option>
                         <option value="নগদ">নগদ (Nagad)</option>
-                        <option value="ব্যাংক ডিপোজিট">ব্যাংক ডিপোজিট (Bank Deposit)</option>
-                        <option value="হ্যান্ড ক্যাশ">হ্যান্ড ক্যাশ (অফিস জমা)</option>
+                        <option value="ব্যাংক ডিপোজিট">ব্যাংক ডিপোজিট (Bank Slip)</option>
+                        <option value="হ্যান্ড ক্যাশ">অফিসে জমা (ক্যাশ)</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">টাকার পরিমাণ (৳)</label>
-                    <input type="number" id="rec-amount" required placeholder="যেমন: 2000" class="w-full border p-2.5 rounded-xl outline-none">
+                    <label class="block font-semibold text-slate-600 mb-1">ট্রানজেকশন আইডি (TrxID) বা ব্যাংক স্লিপ নম্বর</label>
+                    <input type="text" id="ins-trx" required placeholder="যেমন: TRXB98234 অথবা স্লিপ নং" class="w-full border p-2.5 rounded-xl outline-none font-mono">
                 </div>
+
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">ট্রানজেকশন আইডি (TrxID) / স্লিপ নম্বর</label>
-                    <input type="text" id="rec-trx" required placeholder="যেমন: BKL902819 অথবা স্লিপ নম্বর" class="w-full border p-2.5 rounded-xl outline-none">
+                    <label class="block font-semibold text-slate-600 mb-1">ডকুমেন্ট / রিসিট স্ক্রিনশটের অনলাইন লিংক (যদি থাকে)</label>
+                    <input type="url" id="ins-receipt-url" placeholder="যেমন: ImgBB বা ড্রাইভ লিংক" class="w-full border p-2.5 rounded-xl outline-none">
                 </div>
+
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">রিসিট বা স্ক্রিনশটের অনলাইন লিংক (ঐচ্ছিক)</label>
-                    <input type="url" id="rec-image-url" placeholder="যেমন: ImgBB বা ড্রাইভে আপলোড করা লিংক" class="w-full border p-2.5 rounded-xl outline-none">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">বিবরণ / নোট (কোন মাসের বা কোন শেয়ারের জন্য)</label>
-                    <textarea id="rec-notes" rows="2" placeholder="যেমন: অক্টোবর মাসের নিয়মিত মাসিক কিস্তি..." class="w-full border p-2.5 rounded-xl outline-none"></textarea>
+                    <label class="block font-semibold text-slate-600 mb-1">মন্তব্য (প্রয়োজনে)</label>
+                    <input type="text" id="ins-notes" placeholder="যেমন: ফেব্রুয়ারি ও মার্চ মাসের কিস্তি এক সাথে" class="w-full border p-2.5 rounded-xl outline-none">
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs transition">
-                        রিসিট নিশ্চিত করুন ও সাবমিট দিন
+                    <button type="submit" id="submit-installment-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-xs transition shadow-md">
+                        কিস্তির রিকোয়েস্ট সাবমিট করুন
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ৪. প্রোফাইল ভিউ ও এডিট মডাল -->
-    <div id="profile-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-sm font-bold text-slate-800">আমার সদস্য প্রোফাইল</h3>
-                <button onclick="closeModal('profile-modal')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
-            </div>
-
-            <!-- হার্ড-লক ইনফরমেশন (সদস্য এডিট করতে পারবে না) -->
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-2">
-                <div class="flex justify-between"><span class="text-slate-500">নিবন্ধন কোড:</span> <span id="prof-reg" class="font-mono font-bold text-indigo-700">---</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">পূর্ণ নাম:</span> <span id="prof-name" class="font-bold text-slate-800">---</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">পিতার নাম:</span> <span id="prof-father" class="text-slate-700">---</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">এনআইডি/জন্মনিবন্ধন:</span> <span id="prof-nid" class="text-slate-700">---</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">অ্যাসাইনকৃত পদবী:</span> <span id="prof-desig" class="text-indigo-600 font-semibold">---</span></div>
-                <p class="text-[10px] text-amber-700 pt-1 border-t border-slate-200"><i class="fa-solid fa-lock"></i> এই মৌলিক তথ্যগুলো পরিবর্তনের জন্য অ্যাডমিন প্যানেলে আবেদন করুন।</p>
-            </div>
-
-            <!-- এডিটেবল অংশ (মোবাইল, ঠিকানা ও পিন পরিবর্তন) -->
-            <form id="profile-edit-form" class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">যোগাযোগের মোবাইল</label>
-                    <input type="text" id="prof-phone" class="w-full border p-2.5 rounded-xl outline-none">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">বর্তমান ঠিকানা</label>
-                    <input type="text" id="prof-address" class="w-full border p-2.5 rounded-xl outline-none">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">নতুন লগইন পিন (PIN পরিবর্তন করতে চাইলে)</label>
-                    <input type="password" id="prof-pin" placeholder="নতুন ৪ সংখ্যার পিন দিন" class="w-full border p-2.5 rounded-xl outline-none">
-                </div>
-                <button type="submit" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl transition">
-                    প্রোফাইল আপডেট করুন
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- স্ক্রিপ্ট লজিক -->
+    <!-- মূল অ্যাপ্লিকেশন স্ক্রিপ্ট -->
     <script>
-        // ১. মেম্বার লগইন হ্যান্ডলার
+        const monthNames = [
+            { num: 1, name: "জানুয়ারি", code: "01" },
+            { num: 2, name: "ফেব্রুয়ারি", code: "02" },
+            { num: 3, name: "মার্চ", code: "03" },
+            { num: 4, name: "এপ্রিল", code: "04" },
+            { num: 5, name: "মে", code: "05" },
+            { num: 6, name: "জুন", code: "06" },
+            { num: 7, name: "জুলাই", code: "07" },
+            { num: 8, name: "আগস্ট", code: "08" },
+            { num: 9, name: "সেপ্টেম্বর", code: "09" },
+            { num: 10, name: "অক্টোবর", code: "10" },
+            { num: 11, name: "নভেম্বর", code: "11" },
+            { num: 12, name: "ডিসেম্বর", code: "12" }
+        ];
+
+        // পেজ লোড হলে সিস্টেম লোগো চেক করা
+        window.addEventListener('DOMContentLoaded', fetchSystemLogo);
+
+        async function fetchSystemLogo() {
+            const { data } = await client
+                .from('system_settings')
+                .select('logo_data')
+                .eq('id', 'main_logo')
+                .single();
+
+            if (data && data.logo_data) {
+                const imgHtml = `<img src="${data.logo_data}" class="w-12 h-12 rounded-full object-contain bg-white p-0.5 border border-indigo-400">`;
+                const bigImgHtml = `<img src="${data.logo_data}" class="w-20 h-20 rounded-full object-contain bg-white p-1 border-2 border-indigo-500 shadow-md">`;
+                
+                document.getElementById('header-logo-container').innerHTML = imgHtml;
+                document.getElementById('login-logo-container').innerHTML = bigImgHtml;
+            }
+        }
+
+        // লগইন হ্যান্ডলার
         document.getElementById('member-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const regNo = document.getElementById('login-reg-no').value.trim().toUpperCase();
@@ -242,13 +299,12 @@
                 .single();
 
             if (error || !data) {
-                alert('ভুল নিবন্ধন নম্বর! অনুগ্রহ করে সঠিক কোড দিন।');
+                alert('ভুল নিবন্ধন নম্বর! সঠিক কোড দিন।');
                 return;
             }
 
-            const currentPin = data.login_pin || '1234';
-            if (pin !== currentPin) {
-                alert('ভুল পিন (PIN)! পুনরায় চেষ্টা করুন।');
+            if (pin !== (data.login_pin || '1234')) {
+                alert('ভুল পিন (PIN)!');
                 return;
             }
 
@@ -258,16 +314,15 @@
             loadMemberDashboard();
         });
 
-        // ২. মেম্বার ড্যাশবোর্ড ডাটা লোড
+        // মেম্বার ড্যাশবোর্ড ডাটা লোড
         async function loadMemberDashboard() {
             if (!currentMember) return;
 
-            // মেম্বার সাধারণ তথ্য
             document.getElementById('dash-name').innerText = currentMember.full_name;
             document.getElementById('dash-reg').innerText = currentMember.registration_no;
             document.getElementById('dash-desig').innerText = currentMember.designation;
 
-            // শেয়ার ডাটা আনা
+            // শেয়ার ডাটা
             const { data: shares } = await client
                 .from('member_shares')
                 .select('*')
@@ -275,12 +330,12 @@
 
             const shareList = document.getElementById('dash-share-list');
             shareList.innerHTML = '';
-            let totalShareAmount = 0;
-            const shareCount = shares ? shares.length : 0;
+            currentActiveShares = shares ? shares.length : 1;
+            let totalShareVal = 0;
 
-            if (shareCount > 0) {
+            if (shares && shares.length > 0) {
                 shares.forEach(s => {
-                    totalShareAmount += Number(s.share_value || 2000);
+                    totalShareVal += Number(s.share_value || 2000);
                     shareList.innerHTML += `
                         <div class="bg-indigo-50 border border-indigo-200 text-indigo-900 px-3 py-1.5 rounded-xl font-mono text-xs font-bold flex items-center space-x-1">
                             <i class="fa-solid fa-certificate text-indigo-600 text-[10px]"></i>
@@ -289,41 +344,34 @@
                     `;
                 });
             } else {
-                shareList.innerHTML = '<span class="text-xs text-slate-400">কোনো শেয়ার যুক্ত নেই</span>';
+                shareList.innerHTML = '<span class="text-xs text-slate-400">কোনো শেয়ার নেই</span>';
             }
 
-            document.getElementById('dash-share-badge').innerText = `${shareCount} টি শেয়ার`;
-            document.getElementById('dash-share-count-text').innerText = `${shareCount} টি (৳${totalShareAmount.toLocaleString()})`;
+            document.getElementById('dash-share-count').innerText = `${shares ? shares.length : 0} টি`;
+            document.getElementById('dash-share-sum').innerText = `৳ ${totalShareVal.toLocaleString()}`;
+            document.getElementById('dash-total-savings').innerText = `৳ ${totalShareVal.toLocaleString()}`;
 
-            // ইনভেস্টমেন্ট ও লাভ ডাটা
-            const { data: investments } = await client
+            // ইনভেস্টমেন্ট তথ্য
+            const { data: invs } = await client
                 .from('investments')
                 .select('*')
                 .eq('member_id', currentMember.id);
 
-            let totalInvested = 0;
-            let totalEarnedProfit = 0;
-
-            if (investments) {
-                investments.forEach(inv => {
-                    totalInvested += Number(inv.invest_amount || 0);
-                    totalEarnedProfit += Number(inv.investor_profit_share || 0);
+            let totalInv = 0, totalProfit = 0;
+            if (invs) {
+                invs.forEach(i => {
+                    totalInv += Number(i.invest_amount || 0);
+                    totalProfit += Number(i.investor_profit_share || 0);
                 });
             }
+            document.getElementById('dash-inv-amount').innerText = `৳ ${totalInv.toLocaleString()}`;
+            document.getElementById('dash-inv-profit').innerText = `৳ ${totalProfit.toLocaleString()}`;
 
-            document.getElementById('dash-inv-amount').innerText = `৳ ${totalInvested.toLocaleString()}`;
-            document.getElementById('dash-inv-profit').innerText = `৳ ${totalEarnedProfit.toLocaleString()}`;
-            document.getElementById('dash-profit').innerText = `৳ ${totalEarnedProfit.toLocaleString()}`;
-
-            // মোট সক্রিয় মূলধন
-            const totalActiveFund = totalShareAmount + totalEarnedProfit;
-            document.getElementById('dash-total-funds').innerText = `৳ ${totalActiveFund.toLocaleString()}`;
-
-            // রিসিট হিস্ট্রি লোড
+            // কিস্তি রিসিট লোড এবং পরিশোধিত মাস বের করা
             loadReceiptHistory();
         }
 
-        // ৩. রিসিট হিস্ট্রি
+        // রিসিট হিস্ট্রি লোড
         async function loadReceiptHistory() {
             const { data: receipts } = await client
                 .from('payment_requests')
@@ -333,9 +381,16 @@
 
             const list = document.getElementById('dash-receipt-list');
             list.innerHTML = '';
+            paidMonthsSet.clear();
 
             if (receipts && receipts.length > 0) {
                 receipts.forEach(r => {
+                    // অনুমোদিত হলে মাসগুলো সেটে যুক্ত করা
+                    if (r.status === 'approved' && r.target_months) {
+                        const mArray = r.target_months.split(',').map(m => m.trim());
+                        mArray.forEach(m => paidMonthsSet.add(m));
+                    }
+
                     let badge = '';
                     if (r.status === 'pending') badge = '<span class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-bold">পেন্ডিং</span>';
                     else if (r.status === 'approved') badge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-bold">অনুমোদিত</span>';
@@ -349,82 +404,130 @@
                             </div>
                             <div class="flex justify-between text-[11px] text-slate-500">
                                 <span>${r.payment_method} (${r.trx_id_or_slip})</span>
-                                <span>${new Date(r.created_at).toLocaleDateString()}</span>
+                                <span>${r.target_months || 'কিস্তি'}</span>
                             </div>
                         </div>
                     `;
                 });
             } else {
-                list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">কোনো রিসিট জমা দেওয়া হয়নি</p>';
+                list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">কোনো কিস্তি জমা দেওয়া হয়নি</p>';
             }
         }
 
-        // ৪. রিসিট সাবমিট
-        document.getElementById('receipt-submit-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const amount = parseFloat(document.getElementById('rec-amount').value);
-            const method = document.getElementById('rec-method').value;
-            const trx = document.getElementById('rec-trx').value.trim();
-            const imgUrl = document.getElementById('rec-image-url').value.trim();
-            const notes = document.getElementById('rec-notes').value.trim();
+        // কিস্তি পরিশোধ মডাল ওপেন
+        function openInstallmentModal() {
+            const today = new Date();
+            document.getElementById('ins-current-date').value = today.toISOString().split('T')[0];
+            renderMonthSelectors();
+            calculatePayable();
+            document.getElementById('installment-modal').classList.remove('hidden');
+        }
 
-            const { error } = await client.from('payment_requests').insert([{
+        // মাসের চেকবক্স গ্রিড রেন্ডার (পরিশোধিত মাস লক/ইনভিজিবল হবে)
+        function renderMonthSelectors() {
+            const selectedYear = document.getElementById('ins-year').value;
+            const container = document.getElementById('month-grid');
+            container.innerHTML = '';
+
+            monthNames.forEach(m => {
+                const monthKey = `${selectedYear}-${m.code}`;
+                const isPaid = paidMonthsSet.has(monthKey);
+
+                if (isPaid) {
+                    // পরিশোধিত হলে ডিসেবল্ড ও হালকা থাকবে
+                    container.innerHTML += `
+                        <label class="flex items-center space-x-1.5 p-2 bg-slate-200/60 text-slate-400 rounded-lg cursor-not-allowed">
+                            <input type="checkbox" disabled checked class="rounded opacity-40">
+                            <span class="text-[11px] line-through">${m.name}</span>
+                        </label>
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <label class="flex items-center space-x-1.5 p-2 bg-white text-slate-700 rounded-lg border border-slate-200 cursor-pointer hover:border-indigo-400 transition">
+                            <input type="checkbox" name="installment_month" value="${monthKey}" data-monthnum="${m.num}" data-year="${selectedYear}" onchange="calculatePayable()" class="rounded text-indigo-600 focus:ring-0">
+                            <span class="text-[11px] font-semibold">${m.name}</span>
+                        </label>
+                    `;
+                }
+            });
+        }
+
+        // ১০০ টাকা লেট ফি এবং প্রদেয় টাকা ক্যালকুলেশন লজিক
+        function calculatePayable() {
+            const selectedCheckboxes = document.querySelectorAll('input[name="installment_month"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+            document.getElementById('selected-months-count').innerText = `${selectedCount} মাস নির্বাচিত`;
+
+            const perShareRate = 2000;
+            const baseAmount = selectedCount * perShareRate * currentActiveShares;
+
+            // লেট ফি ক্যালকুলেশন
+            let totalLateFee = 0;
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1; // 1-12
+
+            selectedCheckboxes.forEach(cb => {
+                const targetYear = parseInt(cb.getAttribute('data-year'), 10);
+                const targetMonth = parseInt(cb.getAttribute('data-monthnum'), 10);
+
+                // যদি নির্বাচিত মাসটি বর্তমান মাসের আগের কোনো মাস হয়
+                // অর্থাৎ মাসের শেষ দিন ৩১ তারিখ পার হয়ে পরবর্তী মাসের ১ তারিখে চলে এসেছে
+                if (targetYear < currentYear || (targetYear === currentYear && targetMonth < currentMonth)) {
+                    totalLateFee += 100; // প্রতি বকেয়া মাসের জন্য ১০০ টাকা লেট ফি
+                }
+            });
+
+            const totalPayable = baseAmount + totalLateFee;
+
+            document.getElementById('ins-rate-text').innerText = `৳ ${(perShareRate * currentActiveShares).toLocaleString()}`;
+            document.getElementById('ins-base-amount').innerText = `৳ ${baseAmount.toLocaleString()}`;
+            document.getElementById('ins-late-fee').innerText = `৳ ${totalLateFee.toLocaleString()}`;
+            document.getElementById('ins-total-payable').innerText = `৳ ${totalPayable.toLocaleString()}`;
+
+            return { selectedCount, baseAmount, totalLateFee, totalPayable };
+        }
+
+        // কিস্তির ফর্ম সাবমিশন
+        document.getElementById('installment-submit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { selectedCount, totalLateFee, totalPayable } = calculatePayable();
+
+            if (selectedCount === 0) {
+                alert('অনুগ্রহ করে অন্তত একটি পরিশোধযোগ্য মাস নির্বাচন করুন!');
+                return;
+            }
+
+            const selectedMonths = Array.from(document.querySelectorAll('input[name="installment_month"]:checked')).map(cb => cb.value).join(', ');
+            const method = document.getElementById('ins-method').value;
+            const trx = document.getElementById('ins-trx').value.trim();
+            const slipUrl = document.getElementById('ins-receipt-url').value.trim();
+            const notes = document.getElementById('ins-notes').value.trim();
+
+            const payload = {
                 member_id: currentMember.id,
-                amount: amount,
+                amount: totalPayable,
                 payment_method: method,
                 trx_id_or_slip: trx,
-                receipt_image_url: imgUrl,
+                receipt_image_url: slipUrl,
+                target_months: selectedMonths,
+                installment_count: selectedCount,
+                late_fee: totalLateFee,
                 notes: notes,
                 status: 'pending'
-            }]);
+            };
+
+            const { error } = await client.from('payment_requests').insert([payload]);
 
             if (error) {
                 alert('ত্রুটি: ' + error.message);
             } else {
-                alert('রিসিট সফলভাবে জমা হয়েছে! অ্যাডমিন পর্যালোচনা করে অনুমোদন করবেন।');
-                document.getElementById('receipt-submit-form').reset();
-                closeModal('receipt-modal');
-                loadReceiptHistory();
+                alert(`আপনার ৳ ${totalPayable.toLocaleString()} টাকার কিস্তির রিসিট সফলভাবে সাবমিট হয়েছে!\nঅ্যাডমিন প্যানেল থেকে যাচাই করে অনুমোদন করা হবে।`);
+                closeModal('installment-modal');
+                document.getElementById('installment-submit-form').reset();
+                loadMemberDashboard();
             }
         });
-
-        // ৫. প্রোফাইল ওপেন ও আপডেট
-        function openProfile() {
-            document.getElementById('prof-reg').innerText = currentMember.registration_no;
-            document.getElementById('prof-name').innerText = currentMember.full_name;
-            document.getElementById('prof-father').innerText = currentMember.father_name || 'N/A';
-            document.getElementById('prof-nid').innerText = currentMember.birth_reg_or_nid || 'N/A';
-            document.getElementById('prof-desig').innerText = currentMember.designation;
-            document.getElementById('prof-phone').value = currentMember.phone || '';
-            document.getElementById('prof-address').value = currentMember.address || '';
-            openModal('profile-modal');
-        }
-
-        document.getElementById('profile-edit-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const phone = document.getElementById('prof-phone').value.trim();
-            const address = document.getElementById('prof-address').value.trim();
-            const pin = document.getElementById('prof-pin').value.trim();
-
-            const updateData = { phone, address };
-            if (pin) updateData.login_pin = pin;
-
-            const { error } = await client.from('members').update(updateData).eq('id', currentMember.id);
-            if (error) {
-                alert('আপডেট ব্যর্থ: ' + error.message);
-            } else {
-                alert('প্রোফাইল সফলভাবে আপডেট করা হয়েছে!');
-                currentMember.phone = phone;
-                currentMember.address = address;
-                if (pin) currentMember.login_pin = pin;
-                closeModal('profile-modal');
-            }
-        });
-
-        function openModal(id) {
-            if (id === 'profile-modal') openProfile();
-            document.getElementById(id).classList.remove('hidden');
-        }
 
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
